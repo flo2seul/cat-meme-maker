@@ -32,6 +32,14 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script type="text/babel">
+      const jsonLocalStorage = {
+        setItem: (key, value) => {
+          localStorage.setItem(key, JSON.stringify(value));
+        },
+        getItem: (key) => {
+          return JSON.parse(localStorage.getItem(key));
+        },
+      };
       console.log("야옹");
 
       function CatItem(props) {
@@ -53,7 +61,7 @@
         )
       }
 
-    const MainCard = ({img, handleHeartClick}) => {
+    const MainCard = ({img, onHeartClick}) => {
     
         return (
           <div className="main-card">
@@ -62,7 +70,7 @@
               alt="고양이"
               width="400"
             />
-            <button onClick={handleHeartClick}>🤍</button>
+            <button onClick={onHeartClick}>🤍</button>
           </div>
         )
       }
@@ -70,7 +78,7 @@
       const Title = (props) => {
         return <h1>{props.children}</h1>;
       }
-      const Form = () => {
+      const Form = ({updateMainCat}) => {
         const includesHangul = (text) => /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/i.test(text);
         const [value, setValue] = React.useState('');
         const [errorMessage, setErrorMessage] = React.useState('');
@@ -88,7 +96,9 @@
          e.preventDefault();
         if (value === "") {
           setErrorMessage("빈 값으로 만들 수 없습니다.")
+          return
         }
+        updateMainCat();
        }
         return (
           <form onSubmit={handleFormSubmit}>
@@ -103,27 +113,32 @@
         const CAT1 = "https://cataas.com/cat/HSENVDU4ZMqy7KQ0/says/react";
         const CAT2 = "https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn";
         const CAT3 = "https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript";
-        const [counter, setCounter] = React.useState(1); // 초기값
+        const [counter, setCounter] = React.useState(
+          jsonLocalStorage.getItem("counter")
+        ); // 초기값
         const [mainCat, setMainCat] = React.useState(CAT1);
-        const [favorites, setFavorites] = React.useState([CAT1,CAT2])
+        const [favorites, setFavorites] = React.useState(
+          jsonLocalStorage.getItem('favorites') || []
+        )
 
-        function handleFormSubmit(event) {
-          event.preventDefault();
-          console.log("foam submit")
-          setCounter(counter + 1);
+        function updateMainCat(event) {
           setMainCat(CAT2);
+          const nextCounter = counter + 1;
+          setCounter(nextCounter);
+          jsonLocalStorage.setItem('counter', nextCounter);
         }
        
         function handleHeartClick() {
-          console.log("click heart")
-          setFavorites([...favorites, CAT3])
+          const nextFavorites = [...favorites, mainCat]
+          setFavorites(nextFavorites)
+          jsonLocalStorage.setItem('favorites', nextFavorites)
         }
 
         return(
         <div>
           <Title>{counter}번째 고양이 가라사대</Title>
-          <Form handleFormSubmit={handleFormSubmit}/>
-          <MainCard img={mainCat} handleHeartClick={handleHeartClick}/>
+          <Form updateMainCat={updateMainCat}/>
+          <MainCard img={mainCat} onHeartClick={handleHeartClick}/>
           <Favorites favorites={favorites}/>
         </div>
         )
