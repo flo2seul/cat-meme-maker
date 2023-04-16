@@ -41,22 +41,20 @@
           </li>
         )
       }
-      function Favorites() {
+      function Favorites({favorites}) {
+      
         return (
           <ul className="favorites">
-            <CatItem img="https://cataas.com/cat/HSENVDU4ZMqy7KQ0/says/react"/>
-            <CatItem img="https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn"/>
+            {favorites.map((cat) =>(
+
+            <CatItem img={cat} key={cat}/>
+            ))}
           </ul> 
         )
       }
 
-    const MainCard = ({img}) => {
-      function handleHeartClick() {
-        console.log("click heart")
-      }
-      function handleHeartMouseOver() {
-        console.log("mouseOver heart")
-      }
+    const MainCard = ({img, handleHeartClick}) => {
+    
         return (
           <div className="main-card">
             <img
@@ -64,7 +62,7 @@
               alt="고양이"
               width="400"
             />
-            <button onClick={handleHeartClick} onMouseOver={handleHeartMouseOver}>🤍</button>
+            <button onClick={handleHeartClick}>🤍</button>
           </div>
         )
       }
@@ -88,6 +86,7 @@
         const CAT3 = "https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript";
         const [counter, setCounter] = React.useState(1); // 초기값
         const [mainCat, setMainCat] = React.useState(CAT1);
+        const [favorites, setFavorites] = React.useState([CAT1,CAT2])
 
         function handleFormSubmit(event) {
           event.preventDefault();
@@ -96,12 +95,17 @@
           setMainCat(CAT2);
         }
        
+        function handleHeartClick() {
+          console.log("click heart")
+          setFavorites([...favorites, CAT3])
+        }
+
         return(
         <div>
           <Title>{counter}번째 고양이 가라사대</Title>
           <Form handleFormSubmit={handleFormSubmit}/>
-          <MainCard img={mainCat}/>
-          <Favorites/>
+          <MainCard img={mainCat} handleHeartClick={handleHeartClick}/>
+          <Favorites favorites={favorites}/>
         </div>
         )
       }
