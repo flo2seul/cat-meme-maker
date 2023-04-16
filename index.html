@@ -37,13 +37,13 @@
       function CatItem(props) {
         return (
           <li>
-            <img src={props.img}/>
+            <img src={props.img} style={{ width: "150px"}}/>
           </li>
         )
       }
       function Favorites() {
         return (
-          <ul class="favorites">
+          <ul className="favorites">
             <CatItem img="https://cataas.com/cat/HSENVDU4ZMqy7KQ0/says/react"/>
             <CatItem img="https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn"/>
           </ul> 
@@ -52,7 +52,7 @@
 
     const MainCard = ({img}) => {
         return (
-          <div class="main-card">
+          <div className="main-card">
             <img
               src={img}
               alt="고양이"
