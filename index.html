@@ -56,6 +56,10 @@
         )
       }
       function Favorites({favorites}) {
+
+        if(favorites.length === 0) {
+          return <div>사진 위 하트를 눌러 고양이 사진을 저장해봐요!</div>
+        }
       
         return (
           <ul className="favorites">
@@ -67,8 +71,9 @@
         )
       }
 
-    const MainCard = ({img, onHeartClick}) => {
-    
+    const MainCard = ({img, onHeartClick, alredyFavorite}) => {
+
+        const heartIcon = alredyFavorite ? "💖": "🤍";
         return (
           <div className="main-card">
             <img
@@ -76,12 +81,13 @@
               alt="고양이"
               width="400"
             />
-            <button onClick={onHeartClick}>🤍</button>
+            <button onClick={onHeartClick}>{heartIcon}</button>
           </div>
         )
       }
 
       const Title = (props) => {
+        console.log(props)
         return <h1>{props.children}</h1>;
       }
       const Form = ({updateMainCat}) => {
@@ -119,6 +125,7 @@
         const CAT1 = "https://cataas.com/cat/HSENVDU4ZMqy7KQ0/says/react";
         const CAT2 = "https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn";
         const CAT3 = "https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript";
+
         const [counter, setCounter] = React.useState(
           jsonLocalStorage.getItem("counter")
         ); // 초기값
@@ -126,7 +133,17 @@
         const [favorites, setFavorites] = React.useState(
           jsonLocalStorage.getItem('favorites') || []
         )
-
+      
+        const alredyFavorite = favorites.includes(mainCat)
+        async function setInitialCat() {
+          const newCat = await fetchCat('First cat');
+          setMainCat(newCat);
+        }
+        
+        
+        React.useEffect(()=> {
+          setInitialCat();
+        },[])
         async function updateMainCat(value) {
           const newCat = await fetchCat(value);
           setMainCat(newCat);
@@ -140,12 +157,13 @@
           setFavorites(nextFavorites)
           jsonLocalStorage.setItem('favorites', nextFavorites)
         }
-
+      
+        const counterTitle = counter === null ? "" : counter + "번째 ";
         return(
         <div>
-          <Title>{counter}번째 고양이 가라사대</Title>
+          <Title>{counterTitle}고양이 가라사대</Title>
           <Form updateMainCat={updateMainCat}/>
-          <MainCard img={mainCat} onHeartClick={handleHeartClick}/>
+          <MainCard img={mainCat} onHeartClick={handleHeartClick} alredyFavorite={alredyFavorite}/>
           <Favorites favorites={favorites}/>
         </div>
         )
